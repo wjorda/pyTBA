@@ -375,3 +375,33 @@ def district_rankings(year, district_code, team=None):
 def district_teams(year, district_code):
     """Fetches the list of teams for the provided district (string) in a certain year (int)"""
     return tba_get('district/' + district_code + '/' + str(year) + '/teams')
+
+
+def post_video(token, secret, event_key, match_video):
+    global trusted_auth
+    set_auth_id(token)
+    set_auth_sig(secret, event_key, match_video)
+    #url_str = "http://thebluealliance.com/api/trusted/v1/event/%s/match_videos/add" % event_key
+    url_str = "http://tba.lopreiato.me/api/trusted/v1/event/%s/match_videos/add" % event_key
+    # ^ For testing purposes only, the line above is the real code.
+    if trusted_auth['X-TBA-Auth-Id'] == "" or trusted_auth['X-TBA-Auth-Sig'] == "":
+        raise Exception("""An auth ID and/or auth secret required.
+            Please use set_auth_id() and/or set_auth_secret() to set them""")
+
+    r = s.post(url_str, data=match_video, headers=trusted_auth)
+    if "Error" in r.content:
+        raise Exception(r.content)
+
+def set_auth_id(token):
+    global trusted_auth
+    trusted_auth['X-TBA-Auth-Id'] = token
+
+def set_auth_sig(secret, event_key, request_body):
+    global trusted_auth
+    m = hashlib.md5()
+    request_path = "/api/trusted/v1/event/%s/match_videos/add" % event_key
+    concat = secret + request_path + str(request_body)
+    m.update(concat)
+    md5 = m.hexdigest()
+    trusted_auth['X-TBA-Auth-Sig'] = str(md5)
+    return request_path
