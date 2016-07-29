@@ -32,6 +32,77 @@ def set_api_key(name, description, version):
     app_id['X-TBA-App-Id'] = name + ':' + description + ':' + str(version)
 
 
+
+def tba_query(path_func, app_id=app_id):
+    def query(*args):
+        path_str = path_func(*args)
+        return tba_get(path_str, app_id)
+
+    return query
+
+
+def team_format(team, format="frc{}"):
+    if isinstance(team, int): return format.format(team)
+    if isinstance(team, str):
+        team = team.lower()
+        if team.isdigit(): return team_format(int(team), format)
+        if team.startswith("frc"):
+            team_int = int(team.replace("frc", ""))
+            return team_format(team_int, format)
+
+    raise ValueError("Bad team format: " + str(team))
+
+
+
+
+def team_wrap(**kwargs):
+    if 'format' not in kwargs: format = "frc{}"
+    else: format = kwargs['format']
+
+    if 'pos' in kwargs.keys():
+        pos = kwargs['pos']
+
+        def decorator(func):
+            def wrapped(*args):
+                team = args[pos]
+                team = team_format(team, format)
+                newargs = list(args)
+                newargs[pos] = team
+                return func(*newargs)
+
+            return wrapped
+
+        return decorator
+    elif 'kword' in kwargs.keys():
+        kword = kwargs['kword']
+
+        def decorator(func):
+            def wrapped(**kwargs):
+                team = kwargs[kword]
+                team = team_format(team, format)
+                kwargs[kword] = team
+                return func(**kwargs)
+
+            return wrapped
+
+        return decorator
+    else:
+        pos = 0
+
+        def decorator(func):
+            def wrapped(*args):
+                team = args[pos]
+                team = team_format(team, format)
+
+                newargs = list(args)
+                newargs[pos] = team
+                return func(*newargs)
+
+            return wrapped
+
+        return decorator
+
+
 class Event:
     """Class representing a single FRC Event with associated data.
 
@@ -74,6 +145,7 @@ class Event:
             if match['key'] == key: return match
         return None
 
+    @team_wrap(pos=1)
     def team_matches(self, team, round=None, quals_only=False, playoffs_only=False):
         """Returns a list of a team's matches at this event.
         :param team: (int or str formatted as 'frcXXXX') The team to get matches for.
@@ -86,7 +158,6 @@ class Event:
             score - int with team's alliance's score
             opp_score - int with team's opponent aliiance's score
         """
-        if isinstance(team, int): team = 'frc' + str(team)
         matches = []
         filteredMatches = self.matches
 
@@ -102,6 +173,7 @@ class Event:
                                 'opp_score': match['alliances']['red']['score']})
         return matches
 
+    @team_wrap(pos=1, format="{}")
     def team_awards(self, team):
         """Gets all of the awards given to this team at this event.
         :param team: (int or str formatted as 'frcXXXX') The team to get awards for.
@@ -110,8 +182,7 @@ class Event:
             name - String of the award's common name
             awardee - String of the individual recipient of the award (if applicable)
         """
-        if isinstance(team, str):
-            team = int(team.split('frc')[1])
+        team = int(team)
         awards = []
         for award in self.awards:
             for recipient in award['recipient_list']:
@@ -119,6 +190,7 @@ class Event:
                     awards.append({'award': award, 'name': award['name'], 'awardee': recipient['awardee']})
         return awards
 
+    @team_wrap(pos=1, format="{}")
     def team_ranking(self, team, array=False):
         """Return the ranking information about a team for this event.
         :param team: (int or str formatted as 'frcXXXX') The team to get ranking information for.
@@ -128,10 +200,6 @@ class Event:
             https://www.thebluealliance.com/apidocs#event-rankings-request for more info on specific headers usd per year)
             Typically, a team's rank is under "Rank" (capital R).
         """
-        if isinstance(team, str):
-            team = team.split('frc')[1]
-        elif isinstance(team, int):
-            team = str(team)
         if not array: headers = self.rankings[0]
         rank = None
 
@@ -273,12 +341,13 @@ def match_sort_key(match):
     return key
 
 
-def tba_get(path):
+def tba_get(path, app_id=app_id):
     """Base method for querying the TBA API. Returns the response JSON as a python dict.
     :param path: (str) Request path, without the API address prefix (https://www.thebluealliance.com/api/v2/)
+    :param app_id: (str) TBA App ID. Defaults to the module-wide ID
     :return: A dict parsed from the response from the API.
     """
-    global app_id
+
     if app_id['X-TBA-App-Id'] == "":
         raise Exception('An API key is required for TBA. Please use set_api_key() to set one.')
 
@@ -304,24 +373,24 @@ def event_get(year_key, filtered=True):
     return Event(info, teams, matches, awards, rankings, key=year_key, filtered=filtered)
 
 
+@team_wrap()
+@tba_query
 def team_get(team):
     """Convenience function for getting team information. Fetches the info dict for the provided team (either an int or
         a string in the form 'frcXXXX')"""
-    if isinstance(team, int): team = 'frc' + str(team)
-    return tba_get('team/' + team)
+    return 'team/' + team
 
-
+@team_wrap()
+@tba_query
 def team_events(team, year):
     """Fetches a list of events attended by the provided team (either an int or a string in the form 'frcXXXX') in a
     certain year (int)"""
-    if isinstance(team, int): team = 'frc' + str(team)
-    return tba_get('team/' + team + '/' + str(year) + '/events')
+    return 'team/' + team + '/' + str(year) + '/events'
 
-
+@team_wrap()
 def team_matches(team, year):
     """Fetches a list of the matches played by the provided team (either an int or a string in the form 'frcXXXX') in a
         certain year (int)"""
-    if isinstance(team, int): team = 'frc' + str(team)
     matches = []
     for event in team_events(team, year):
         try:
@@ -371,7 +440,8 @@ def district_rankings(year, district_code, team=None):
             ranks_list.append(row)
     return ranks_list
 
-
+@tba_query
 def district_teams(year, district_code):
     """Fetches the list of teams for the provided district (string) in a certain year (int)"""
-    return tba_get('district/' + district_code + '/' + str(year) + '/teams')
+    return 'district/' + district_code + '/' + str(year) + '/teams'
+
