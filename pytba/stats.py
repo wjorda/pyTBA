@@ -46,7 +46,7 @@ def opr(event: Event, **kwargs):
 
     Example:
         tower_strengh_func = lambda match, alliance: 8 - match['score_breakdown']['blue' if alliance == 'red' else 'red']['towerEndStrength']
-        oprs = event.opr(teleop='teleopPoints', boulders=tower_strength_func)
+        oprs = opr(event, teleop='teleopPoints', boulders=tower_strength_func)
 
         returns:
             {
@@ -78,10 +78,10 @@ def opr(event: Event, **kwargs):
                 score.append(match['score_breakdown']['red'][item])
         match_scores.append(score)
 
-    match_matrix = event.match_matrix()
+    matrix = match_matrix(event)
     score_matrix = numpy.array(match_scores)
     opr_dict = {}
-    mat = numpy.transpose(match_matrix).dot(match_matrix)
+    mat = numpy.transpose(matrix).dot(matrix)
 
     for team in event.teams:
         opr_dict[team['key']] = {}
@@ -90,7 +90,7 @@ def opr(event: Event, **kwargs):
     for key in kwargs:
         """Solving  A'Ax = A'b with A being the match matrix, and b being the score column we're solving for"""
         score_comp = score_matrix[:, col]
-        opr = numpy.linalg.solve(mat, numpy.transpose(match_matrix).dot(score_comp))
+        opr = numpy.linalg.solve(mat, numpy.transpose(matrix).dot(score_comp))
         assert len(opr) == len(event.teams)
         row = 0
         for team in event.teams:
