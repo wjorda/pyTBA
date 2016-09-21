@@ -10,12 +10,22 @@ from pytba import api as tba
 
 tba.set_api_key("<Your Name>", "<App Name>", "<App Version>")
 ```
-## Usage:
+## Basic Usage:
 The most basic usage is to make a query to an arbitrary URL in the TBA API.
  This is done by:
  ```python
  tba.tba_get('relative/url/goes/here')
  ```
  PyTBA makes a request to the TBA API (https://www.thebluealliance.com/api/v2/)
-  and returns the response, stored as a `dict`. (See [https://www.thebluealliance.com/apidocs](TBA api docs) for more information)
+  and returns the response, stored as a `dict`. (See [https://www.thebluealliance.com/apidocs](TBA api docs) for more information about keys)
+  
+ More advanced usage can be found in the documentation in the source code.
+  
+##Modules required:
+* `requests`
+* `cachecontrol`
+* `numpy` (If using `pytba.stats`)
+  
+###Note about older versions:
+If you are updating from an older version (with the single blualliance.py file), be aware that the package structure has become more modularized. The core API code is now in the `pytba.api` module. The `Event` class is now under `pytba.models`. The decorators and utility methods are now under `pytba.util`, and OPR calcuation is now under `pytba.stat`. 
 
