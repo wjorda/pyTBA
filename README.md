@@ -11,10 +11,11 @@ from pytba import api as tba
 tba.set_api_key("<Your Name>", "<App Name>", "<App Version>")
 `
 ## Usage:
-The most basic usage is to make a query to a known URL in the TBA API.
+The most basic usage is to make a query to an arbitrary URL in the TBA API.
  This is done by:
  '
  tba.tba_get('relative/url/goes/here')
  '
- PyTBA makes a request to the TBA API and returns the JSON response stored
- as a `dict`.
+ PyTBA makes a request to the TBA API (https://www.thebluealliance.com/api/v2/)
+  and returns the response, stored as a `dict`. (See [https://www.thebluealliance.com/apidocs](TBA api docs) for more information)
+

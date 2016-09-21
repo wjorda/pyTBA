@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="118624e6-bffc-466a-aa82-e055faba7b34" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
     </list>
     <ignored path="pyTBA.iws" />
@@ -97,7 +96,7 @@
           <provider selected="true" editor-type-id="split-provider[text-editor;MarkdownPreviewEditor]">
             <state split_layout="FIRST">
               <first_editor relative-caret-position="285">
-                <caret line="19" column="13" selection-start-line="19" selection-start-column="13" selection-end-line="19" selection-end-column="13" />
+                <caret line="19" column="130" selection-start-line="19" selection-start-column="130" selection-end-line="19" selection-end-column="130" />
                 <folding />
               </first_editor>
               <second_editor />
@@ -758,7 +757,7 @@
       <provider selected="true" editor-type-id="split-provider[text-editor;MarkdownPreviewEditor]">
         <state split_layout="FIRST">
           <first_editor relative-caret-position="285">
-            <caret line="19" column="13" selection-start-line="19" selection-start-column="13" selection-end-line="19" selection-end-column="13" />
+            <caret line="19" column="130" selection-start-line="19" selection-start-column="130" selection-end-line="19" selection-end-column="130" />
             <folding />
           </first_editor>
           <second_editor />
