@@ -75,7 +75,7 @@ def opr(event: Event, **kwargs):
             if callable(item):
                 score.append(item(match, 'blue'))
             else:
-                score.append(match['score_breakdown']['red'][item])
+                score.append(match['score_breakdown']['blue'][item])
         match_scores.append(score)
 
     matrix = match_matrix(event)
