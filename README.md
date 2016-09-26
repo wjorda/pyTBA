@@ -24,6 +24,7 @@ The most basic usage is to make a query to an arbitrary URL in the TBA API.
 ##Modules required:
 * `requests`
 * `cachecontrol`
+* `dpath`
 * `numpy` (If using `pytba.stats`)
   
 ###Note about older versions:

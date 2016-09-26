@@ -123,6 +123,24 @@ class Event:
         """Returns the playoff matches for this event."""
         return list(filter(lambda match: match['comp_level'] != 'qm', self.matches))
 
+class MatchHelper:
+    COMP_LEVEL = 'comp_level'
+    MATCH_NUMBER = 'match_number'
+    VIDEOS = 'videos'
+    TIME_STRING = 'time_string'
+    SET_NUMBER = 'set_number'
+    EVENT_KEY = 'event_key'
+    KEY = 'key'
+    TIME = 'time'
+    SCORE_BREAKDOWN = 'score_breakdown'
+    ALLIANCES = 'alliances'
+    BLUE_ALLIANCE = 'alliances/blue'
+    BLUE_ALLIANCE_TEAMS = BLUE_ALLIANCE + '/teams'
+    BLUE_ALLIANCE_SCORE = BLUE_ALLIANCE + '/score'
+    RED_ALLIANCE = 'alliances/red'
+    RED_ALLIANCE_TEAMS = RED_ALLIANCE + '/teams'
+    RED_ALLIANCE_SCORE = RED_ALLIANCE + '/score'
+
 
 def match_sort_key(match):
     """Function used to sort matches in chronological order, first by level, then by match set.

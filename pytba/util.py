@@ -11,8 +11,10 @@ def team_format(team, format="frc{}"):
 
 
 def team_wrap(**kwargs):
-    if 'format' not in kwargs: format = "frc{}"
-    else: format = kwargs['format']
+    if 'format' not in kwargs:
+        format = "frc{}"
+    else:
+        format = kwargs['format']
 
     if 'pos' in kwargs.keys():
         pos = kwargs['pos']
@@ -56,3 +58,18 @@ def team_wrap(**kwargs):
             return wrapped
 
         return decorator
+
+
+def follow_dict_path(object: dict, path: str, sep: str = '/'):
+    keynames = path.split(sep)
+    for key in keynames:
+        if len(str(key)) == 0: continue
+        object = object[key]
+
+    return object
+
+
+def match_stat(match, alliance, key):
+    path = 'score_breakdown/' + alliance + '/' + key
+    import dpath
+    return dpath.util.get(match, path)

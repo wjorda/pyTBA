@@ -38,20 +38,28 @@ def opr(event: Event, **kwargs):
      all teams at the event. This is done by creating a match matrix A, and then solving Ax = b for each statistic,
      with x being a horizontal vector containing team OPRs, and b a vertical vector containing the alliance statistic.
 
-    Keyworded arguments are either strings (matching the key of the statistic in the score_breakdown for the match)
-        or functions (which return a calculated statistic when provided the match model dict and the alliance name).
-        Total alliance score is included by default. The results of the OPR calculation are stored in a dict for each
+    Keyworded arguments are either :
+        strings: A DPath string to the path in the match object to get the score from. To search from the root of the
+            match object, prefix your path with '/'. Otherwise, you will search from the score_breakdown object. Use ##ALLIANCE
+            to stand in for the proper alliance name.
+        functions: given the match object and current alliance as an arguments, return a score value.
+
+    Total alliance score is included by default. The results of the OPR calculation are stored in a dict for each
         team, keyed under the team's key in the return dict. The keys in each team's score dict are the same as the
         provided arguments.
 
     Example:
-        tower_strengh_func = lambda match, alliance: 8 - match['score_breakdown']['blue' if alliance == 'red' else 'red']['towerEndStrength']
-        oprs = opr(event, teleop='teleopPoints', boulders=tower_strength_func)
+        def tower_strength(match, alliance):
+            tower = 'red' if alliance == 'blue' else 'blue'
+            return 8 - match[MatchHelper.SCORE_BREAKDOWN][tower][stronghold2016.TOWER_END_STRENGTH]
+
+        oprs = opr(event, teleop='teleopPoints', alt_score='/alliances/##ALLIANCE/score', boulders=tower_strength_func)
 
         returns:
             {
                 "frc1234": {
-                    "score": 55.00 #Total score contribution
+                    "total": 55.00 #Total score contribution
+                    "alt_score": 55.0 #Total score contribution (just another way of obtaining it)
                     "teleop": 32.00 #Teleop score contribution
                     "boulders": 5.23 #Tower strength reduction contribution
                 }
@@ -59,7 +67,7 @@ def opr(event: Event, **kwargs):
             }
     """
     match_scores = []
-    kwargs['total'] = lambda m, a: match['alliances'][a]['score']
+    kwargs['total'] = '/alliances/##ALLIANCE/score'
     for match in filter(lambda match: match['comp_level'] == 'qm', event.matches):
         score = []
         for key in kwargs.keys():

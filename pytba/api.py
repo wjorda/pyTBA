@@ -109,6 +109,10 @@ def team_matches(team, year):
             print(event['key'])
     return matches
 
+@tba_query
+def match_get(match_key):
+    return 'match/' + match_key
+
 
 def district_list(year):
     """Fetches the key/name list of active districts in a certain year (int)"""
