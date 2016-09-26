@@ -10,6 +10,10 @@ def team_format(team, format="frc{}"):
     raise ValueError("Bad team format: " + str(team))
 
 
+def flip_alliance(alliance):
+    return 'red' if alliance == 'blue' else 'blue'
+
+
 def team_wrap(**kwargs):
     if 'format' not in kwargs:
         format = "frc{}"
@@ -73,3 +77,15 @@ def match_stat(match, alliance, key):
     path = 'score_breakdown/' + alliance + '/' + key
     import dpath
     return dpath.util.get(match, path)
+
+
+def list2dict(lst, keysource='index'):
+    if keysource == 'index':
+        return dict((i, lst[i]) for i in range(len(lst)))
+    elif isinstance(keysource, str):
+        import dpath
+        return dict((dpath.util.get(item, keysource), item) for item in lst)
+    elif isinstance(keysource, list):
+        return dict((keysource[i], lst[i]) for i in range(len(lst)))
+    elif callable(keysource):
+        return dict((keysource(item), item) for item in lst)

@@ -26,7 +26,7 @@ class TestApiMethods(unittest.TestCase):
     def test__team_matches(self):
         matches = client.team_matches('frc2363', 2016)
         self.assertEqual(len(matches), 62)
-        self.assertEqual(matches[-1]['opp_score'], 89)
+        self.assertEqual(matches[-1]['alliances']['opponent']['score'], 89)
 
 if __name__ == '__main__':
     unittest.main()

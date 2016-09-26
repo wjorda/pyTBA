@@ -56,7 +56,11 @@ def tba_get(path, app_id=app_id):
     r = s.get(url_str, headers=app_id)
     # print(r.url)
     tba_txt = r.text
-    return json.loads(tba_txt)
+    try:
+        return json.loads(tba_txt)
+    except json.JSONDecodeError:
+        print(url_str)
+        print(tba_txt)
 
 
 def event_get(year_key, filtered=True):
@@ -100,14 +104,22 @@ def team_matches(team, year):
             ev_matches = tba_get('team/' + team + '/event/' + event['key'] + '/matches')
             for match in ev_matches:
                 if team in match['alliances']['red']['teams']:
-                    matches.append({'match': match, 'alliance': 'red', 'score': match['alliances']['red']['score'],
-                                    'opp_score': match['alliances']['blue']['score']})
+                    team_color = 'red'
+                    oppo_color = 'blue'
                 elif team in match['alliances']['blue']['teams']:
-                    matches.append({'match': match, 'alliance': 'blue', 'score': match['alliances']['blue']['score'],
-                                    'opp_score': match['alliances']['red']['score']})
+                    team_color = 'blue'
+                    oppo_color = 'red'
+
+                match['alliances']['team'] = match['alliances'][team_color]
+                match['score_breakdown']['team'] = match['score_breakdown'][team_color]
+                match['alliances']['opponent'] = match['alliances'][oppo_color]
+                match['score_breakdown']['opponent'] = match['score_breakdown'][oppo_color]
+                matches.append(match)
         except:
             print(event['key'])
+            raise
     return matches
+
 
 @tba_query
 def match_get(match_key):

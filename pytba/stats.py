@@ -1,3 +1,4 @@
+import dpath
 import numpy
 
 from pytba.models import Event
@@ -41,7 +42,7 @@ def opr(event: Event, **kwargs):
     Keyworded arguments are either :
         strings: A DPath string to the path in the match object to get the score from. To search from the root of the
             match object, prefix your path with '/'. Otherwise, you will search from the score_breakdown object. Use ##ALLIANCE
-            to stand in for the proper alliance name.
+            ##OPPALLIANCE to stand in for the proper alliance name.
         functions: given the match object and current alliance as an arguments, return a score value.
 
     Total alliance score is included by default. The results of the OPR calculation are stored in a dict for each
@@ -51,9 +52,9 @@ def opr(event: Event, **kwargs):
     Example:
         def tower_strength(match, alliance):
             tower = 'red' if alliance == 'blue' else 'blue'
-            return 8 - match[MatchHelper.SCORE_BREAKDOWN][tower][stronghold2016.TOWER_END_STRENGTH]
+            return 8 - match['score_breakdown'][tower]['towerEndStrength']
 
-        oprs = opr(event, teleop='teleopPoints', alt_score='/alliances/##ALLIANCE/score', boulders=tower_strength_func)
+        opr(event, alt_score='/alliances/##ALLIANCE/score', teleop='teleopPoints', boulders=tower_strength)
 
         returns:
             {
@@ -74,16 +75,28 @@ def opr(event: Event, **kwargs):
             item = kwargs[key]
             if callable(item):
                 score.append(item(match, 'red'))
+            elif isinstance(item, str) and item[0] == '/':
+                path = item.replace('##ALLIANCE', 'red').replace('##OPPALLIANCE', 'blue')[1:]
+                score.append(dpath.util.get(match, path))
+            elif isinstance(item, str):
+                path = item.replace('##ALLIANCE', 'red')
+                score.append(dpath.util.get(match['score_breakdown']['red'], path))
             else:
-                score.append(match['score_breakdown']['red'][item])
+                raise ValueError("argument " + key + " must be either dPath strings, or functions.")
         match_scores.append(score)
         score = []
         for key in kwargs.keys():
             item = kwargs[key]
             if callable(item):
                 score.append(item(match, 'blue'))
+            elif isinstance(item, str) and item[0] == '/':
+                path = item.replace('##ALLIANCE', 'blue').replace('##OPPALLIANCE', 'red')[1:]
+                score.append(dpath.util.get(match, path))
+            elif isinstance(item, str):
+                path = item.replace('##ALLIANCE', 'blue').replace('##OPPALLIANCE', 'red')
+                score.append(dpath.util.get(match['score_breakdown']['blue'], path))
             else:
-                score.append(match['score_breakdown']['blue'][item])
+                raise ValueError("argument " + key + " must be either dPath strings, or functions.")
         match_scores.append(score)
 
     matrix = match_matrix(event)
