@@ -22,7 +22,18 @@ The most basic usage is to make a query to an arbitrary URL in the TBA API.
  ```
  PyTBA makes a request to the TBA API (https://www.thebluealliance.com/api/v2/)
   and returns the response, stored as a `dict`. (See [TBA API docs](https://www.thebluealliance.com/apidocs) for more information about keys)
-  
+ 
+ PyTBA can also retrieve data for entire events:
+ ```python
+    tba.event_get('<Event Code>')
+ ```
+ This returns an `Event` object, which groups together location, team, match, awards, and rankings data.
+ For example, to retrieve a list of `match` models from an `Event`:
+ ```python
+    event = tba.event_get('2016chcmp')
+    matches = event.matches
+ ```
+ 
  More advanced usage can be found in the documentation in the source code.
   
 ##Modules required:
