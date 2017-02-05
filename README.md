@@ -2,8 +2,12 @@
 Python 3 Blue Alliance API Layer for parsing FIRST Robotics Competition event data.
 
 ## Adding it to your code:
-To add PyTBA to your project, all you have to do is import the `pytba.api`
-module, and set an app id:
+To install with `pip`:
+```bash
+pip install pyTBA
+```
+
+To add PyTBA to your project, import the `pytba.api` module, and set an app id:
 
 ```python
 from pytba import api as tba
@@ -25,7 +29,7 @@ The most basic usage is to make a query to an arbitrary URL in the TBA API.
 * `requests`
 * `cachecontrol`
 * `dpath`
-* `numpy` (If using `pytba.stats`)
+* `numpy`
   
 ###Note about older versions:
 If you are updating from an older version (with the single blualliance.py file), be aware that the package structure has become more modularized. The core API code is now in the `pytba.api` module. The `Event` class is now under `pytba.models`. The decorators and utility methods are now under `pytba.util`, and OPR calcuation is now under `pytba.stat`. Check out [the init release](https://github.com/Thing342/pyTBA/releases/tag/init) if you need to clone the older code.
