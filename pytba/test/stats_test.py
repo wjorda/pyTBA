@@ -21,6 +21,10 @@ class MyTestCase(unittest.TestCase):
         self.assertAlmostEqual(record['boulders'], 3.95, places=2)
         self.assertAlmostEqual(record['teleop'], 29.30, places=2)
 
+        old = tba.event_get('2007md')
+        oprs = opr(old, dpr='/alliances/##OPPALLIANCE/score')
+
+
 
 if __name__ == '__main__':
     unittest.main()
