@@ -29,7 +29,7 @@ def match_matrix(event: Event):
         match_list.append(matchRow)
 
     mat = numpy.array(match_list)
-    return mat[:, numpy.apply_along_axis(numpy.count_nonzero, 0, mat) > 8]
+    return mat[:, numpy.apply_along_axis(numpy.count_nonzero, 0, mat) > 6]
 
 
 def opr(event: Event, **kwargs):
