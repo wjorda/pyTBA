@@ -1,5 +1,11 @@
 # pyTBA
 Python 3 Blue Alliance API Layer for parsing FIRST Robotics Competition event data.
+https://www.thebluealliance.com/
+
+## Features:
+* Simple and lightweight API for downloading and parsing BlueAlliance data
+* Data caching faster performance
+* OPR / Individual Stats calculation
 
 ## Adding it to your code:
 To install with `pip`:
@@ -40,7 +46,7 @@ The most basic usage is to make a query to an arbitrary URL in the TBA API.
 * `requests`
 * `cachecontrol`
 * `dpath`
-* `numpy`
+* `numpy` - for OPR calculation
   
 ###Note about older versions:
 If you are updating from an older version (with the single blualliance.py file), be aware that the package structure has become more modularized. The core API code is now in the `pytba.api` module. The `Event` class is now under `pytba.models`. The decorators and utility methods are now under `pytba.util`, and OPR calcuation is now under `pytba.stat`. Check out [the init release](https://github.com/Thing342/pyTBA/releases/tag/init) if you need to clone the older code.
