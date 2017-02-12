@@ -111,9 +111,15 @@ def team_matches(team, year):
                     oppo_color = 'red'
 
                 match['alliances']['team'] = match['alliances'][team_color]
-                match['score_breakdown']['team'] = match['score_breakdown'][team_color]
                 match['alliances']['opponent'] = match['alliances'][oppo_color]
-                match['score_breakdown']['opponent'] = match['score_breakdown'][oppo_color]
+
+                if match['score_breakdown'] is not None:
+                    match['score_breakdown']['team'] = match['score_breakdown'][team_color]
+                    match['score_breakdown']['opponent'] = match['score_breakdown'][
+                        oppo_color] if 'score_breakdown' in match else None
+                else:
+                    match['score_breakdown'] = None
+
                 matches.append(match)
         except:
             print(event['key'])
