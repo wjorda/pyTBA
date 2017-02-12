@@ -7,6 +7,7 @@ All clients using this module must call the set_api_key() function before use in
 """
 
 import json
+
 import requests
 from cachecontrol import CacheControl
 from cachecontrol.heuristics import LastModified
@@ -23,7 +24,7 @@ class TBAClient:
         self.session = requests.Session()
         self.session = CacheControl(self.session, heuristic=LastModified())
         self.session.headers.update(self.app_id)
-        if name is not None: set_api_key(name, description, version)
+        if name is not None: self.set_api_key(name, description, version)
 
     def set_api_key(self, name, description, version):
         """Sets the required API headers for the TBA API. This function MUST be
@@ -38,7 +39,6 @@ class TBAClient:
     def tba_get(self, path):
         """Base method for querying the TBA API. Returns the response JSON as a python dict.
         :param path: (str) Request path, without the API address prefix (https://www.thebluealliance.com/api/v2/)
-        :param app_id: (str) TBA App ID. Defaults to the module-wide ID
         :return: A dict parsed from the response from the API.
         """
 
@@ -86,9 +86,9 @@ class TBAClient:
         """Fetches a list of the matches played by the provided team (either an int or a string in the form 'frcXXXX') in a
             certain year (int)"""
         matches = []
-        for event in team_events(team, year):
+        for event in self.team_events(team, year):
             try:
-                ev_matches = tba_get('team/' + team + '/event/' + event['key'] + '/matches')
+                ev_matches = self.tba_get('team/' + team + '/event/' + event['key'] + '/matches')
                 for match in ev_matches:
                     if team in match['alliances']['red']['teams']:
                         team_color = 'red'
@@ -151,6 +151,7 @@ class TBAClient:
         """Fetches the list of teams for the provided district (string) in a certain year (int)"""
         return self.tba_get('district/' + district_code + '/' + str(year) + '/teams')
 
+
 #################################
 
 defaultclient = TBAClient()
@@ -167,7 +168,7 @@ def set_api_key(name: str, description: str, version: str):
     defaultclient.set_api_key(name, description, version)
 
 
-def tba_query(path_func, tbaclient:TBAClient = defaultclient):
+def tba_query(path_func, tbaclient: TBAClient = defaultclient):
     def query(*args):
         path_str = path_func(*args)
         return tbaclient.tba_get(path_str)
