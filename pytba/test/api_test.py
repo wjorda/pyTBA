@@ -15,7 +15,8 @@ class TestApiMethods(unittest.TestCase):
 
         # Query with invalid key should fail
         with self.assertRaises(TypeError):
-            client.tba_get('team/frc2363', app_id='invalid key')
+            client.set_api_key('invalid_key', None, None)
+            client.tba_get('team/frc2363')
 
     def test__event_get(self):
         event = client.event_get('2016tes')
