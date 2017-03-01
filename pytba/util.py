@@ -11,7 +11,9 @@ def team_format(team, format="frc{}"):
 
 
 def flip_alliance(alliance):
-    return 'red' if alliance == 'blue' else 'blue'
+    if alliance.lower() == 'blue': return 'red'
+    elif alliance.lower() == 'red': return 'blue'
+    else: raise ValueError('Invalid alliance color: ' + alliance)
 
 
 def team_wrap(**kwargs):
@@ -20,29 +22,37 @@ def team_wrap(**kwargs):
     else:
         format = kwargs['format']
 
+    if 'pos' in kwargs.keys() and 'kword' in kwargs.keys():
+        raise ValueError('Using both pos and kword arguments is not currently supported. Use stacked decorators instead.')
+
     if 'pos' in kwargs.keys():
         pos = kwargs['pos']
+        if not isinstance(pos, (list, tuple)): pos = [pos]
 
         def decorator(func):
-            def wrapped(*args):
-                team = args[pos]
-                team = team_format(team, format)
+            def wrapped(*args, **kwargs):
                 newargs = list(args)
-                newargs[pos] = team
-                return func(*newargs)
+                for i in pos:
+                    team = args[i]
+                    team = team_format(team, format)
+                    newargs[i] = team
+                return func(*newargs, **kwargs)
 
             return wrapped
 
         return decorator
     elif 'kword' in kwargs.keys():
         kword = kwargs['kword']
+        if not isinstance(kword, (list, tuple)): kword = [kword]
 
         def decorator(func):
-            def wrapped(**kwargs):
-                team = kwargs[kword]
-                team = team_format(team, format)
-                kwargs[kword] = team
-                return func(**kwargs)
+            def wrapped(*args, **kwargs):
+                for kw in kword:
+                    if kw not in kwargs: continue
+                    team = kwargs[kw]
+                    team = team_format(team, format)
+                    kwargs[kw] = team
+                return func(*args, **kwargs)
 
             return wrapped
 
@@ -68,6 +78,7 @@ def follow_dict_path(object: dict, path: str, sep: str = '/'):
     keynames = path.split(sep)
     for key in keynames:
         if len(str(key)) == 0: continue
+        if str(key).isdigit(): key = int(key)
         object = object[key]
 
     return object

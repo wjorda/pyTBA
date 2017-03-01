@@ -46,7 +46,7 @@ class Event:
     @team_wrap(pos=1)
     def team_matches(self, team, round=None, quals_only=False, playoffs_only=False):
         """Returns a list of a team's matches at this event.
-        :param team: (int or str formatted as 'frcXXXX') The team to get matches for.
+        :param team: (team key or number) The team to get matches for.
         :param round: (str) Competition round to get matches from, either "qualification" or "playoffs"
         :param quals_only: (bool) Select only qualifications if true (default false)
         :param playoffs_only: (bool) Select only playoffs if true (default false, takes precedence over qualsOnly)
