@@ -29,7 +29,9 @@ def match_matrix(event: Event):
         match_list.append(matchRow)
 
     mat = numpy.array(match_list)
-    return mat[:, numpy.apply_along_axis(numpy.count_nonzero, 0, mat) > 6]
+    sum_matches = numpy.sum(mat, axis=0)
+    avg_team_matches = sum(sum_matches) / float(len(sum_matches))
+    return mat[:, numpy.apply_along_axis(numpy.count_nonzero, 0, mat) > avg_team_matches - 2]
 
 
 def opr(event: Event, **kwargs):

@@ -21,6 +21,9 @@ class Event:
         :param key: (str) Manual override for the key (if it is not provided in the info dic)
         """
         if key is None and info is not None: self.key = info['key']
+        else:
+            self.key = key
+
         self.info = info
         if filtered:
             self.teams = list(filter(lambda team: len(list(filter(
