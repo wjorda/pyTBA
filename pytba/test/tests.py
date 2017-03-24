@@ -1,9 +1,8 @@
 import unittest
 
-import util
-from game_constants import stronghold2016
-from pytba import api, VERSION
-from stats import opr
+from pytba import api, VERSION, util
+from pytba.game_constants import stronghold2016
+from pytba.stats import opr
 
 
 class TestApiMethods(unittest.TestCase):
