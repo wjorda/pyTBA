@@ -38,14 +38,12 @@ class TestModelsMethods(unittest.TestCase):
 
     def test__event_init(self):
         event_unfiltered = self.client.event_get('2016vabla', filtered=False)
-        self.assertEqual(len(event_unfiltered.teams), len(self.event.teams) - 1)
+        self.assertEqual(len(event_unfiltered.teams), len(self.event.teams) + 2)
 
     def test__event_get_match(self):
         match = self.event.get_match('sf1m2')
         self.assertEqual(match['alliances']['blue']['score'], 115)
         self.assertIsNone(self.event.get_match('an invalid key'))
-
-    def test__event_team_matches(self):
 
 
 class TestStatsMethods(unittest.TestCase):
@@ -76,6 +74,11 @@ class TestStatsMethods(unittest.TestCase):
         record = oprs['frc303']
         self.assertAlmostEqual(record['total'], 19.26, places=2)
         self.assertAlmostEqual(record['dpr'], 14.94, places=2)
+
+        incomplete = self.tba.event_get('2017vapor')
+        oprs = opr(incomplete, dpr='/alliances/##OPPALLIANCE/score')
+        self.assertIn('frc2363', oprs)
+        record = oprs['frc2363']
 
 
 class TestUtilMethods(unittest.TestCase):
