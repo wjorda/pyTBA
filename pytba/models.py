@@ -1,4 +1,42 @@
+from enum import Enum
+from typing import Dict, List, Any, Union
+
 from pytba.util import team_wrap
+
+
+class EventRound(Enum):
+    QUAL = (0, 'qm', 'Qualification')
+    EF = (1000, 'ef', 'Octofinal')
+    QF = (2000, 'qf', 'Quarterfinal')
+    SF = (3000, 'sf', 'Semifinal')
+    F = (4000, 'f', 'Final')
+
+    index: int
+    abbrev: str
+    fullname: str
+
+    def __init__(self, index, abbrev, fullname):
+        self.index = index
+        self.abbrev = abbrev
+        self.fullname = fullname
+
+
+class EventType(Enum):
+    REGIONAL = (0, 'Regional', False)
+    DISTRICT_QUAL = (1, 'District Qualifier', True)
+    DCMP_DIVSION = (5, 'Distrct Championship Divsion', True)
+    DISTRICT_CMP = (2, 'District Championship', True)
+    CMP_DIVISION = (3, 'Championship Division', False)
+    CMP_FINALS = (4, 'Championship Finals', False)
+
+    index: int
+    fullname: str
+    is_district: bool
+
+    def __init__(self, index, fullname, is_district):
+        self.index = index
+        self.fullname = fullname
+        self.is_district = is_district
 
 
 class Event:
@@ -14,13 +52,22 @@ class Event:
             rankings (list): A 2D table containing the ranking information for the event.
         """
 
-    def __init__(self, info, teams, matches, awards, rankings, filtered=True, key=None):
+    key: str
+    info: Dict[str, Any]
+    teams: List[Dict]
+    matches: List[Dict]
+    awards: List[Dict]
+    rankings: List
+
+    def __init__(self, info: dict, teams: List[Dict], matches: List[Dict], awards: List[Dict], rankings: List,
+                 filtered: bool = True, key: str = None):
         """ Constructs an Event object. All required params are the same as specified in the class docstring.
         :param filtered: (bool) Remove from teams any teams that have not played any matches at this event if true
             (default is true).
         :param key: (str) Manual override for the key (if it is not provided in the info dic)
         """
-        if key is None and info is not None: self.key = info['key']
+        if key is None and info is not None:
+            self.key = info['key']
         else:
             self.key = key
 
@@ -36,7 +83,7 @@ class Event:
         self.awards = awards
         self.rankings = rankings
 
-    def get_match(self, match_key):
+    def get_match(self, match_key: str) -> Union[Dict[str, Any], None]:
         """ Gets the specified match.
         :param match_key: (str) The match's individual key (without the event key preceding it)
         :return: A dict containing match information. (see https://www.thebluealliance.com/apidocs#match-model)
@@ -47,7 +94,7 @@ class Event:
         return None
 
     @team_wrap(pos=1)
-    def team_matches(self, team, round=None, quals_only=False, playoffs_only=False):
+    def team_matches(self, team: Union[str, int], round=None, quals_only=False, playoffs_only=False):
         """Returns a list of a team's matches at this event.
         :param team: (team key or number) The team to get matches for.
         :param round: (str) Competition round to get matches from, either "qualification" or "playoffs"
@@ -75,7 +122,7 @@ class Event:
         return matches
 
     @team_wrap(pos=1, format="{}")
-    def team_awards(self, team):
+    def team_awards(self, team: Union[str, int]):
         """Gets all of the awards given to this team at this event.
         :param team: (int or str formatted as 'frcXXXX') The team to get awards for.
         :return: A list of dicts (one for each award received), containing:
@@ -92,7 +139,7 @@ class Event:
         return awards
 
     @team_wrap(pos=1, format="{}")
-    def team_ranking(self, team, array=False):
+    def team_ranking(self, team: Union[str, int], array: bool = False):
         """Return the ranking information about a team for this event.
         :param team: (int or str formatted as 'frcXXXX') The team to get ranking information for.
         :param array: (bool) returns info as an array if true, otherwise returns as a dict (default).
@@ -118,13 +165,16 @@ class Event:
             col += 1
         return ranking_dict
 
-    def get_qual_matches(self):
-        """Returns the qualification matches for this event."""
-        return list(filter(lambda match: match['comp_level'] == 'qm', self.matches))
+    def get_qual_matches(self, generator=False):
+        """Returns the qualification matches for this event. Returns a generator if generator == true."""
+        gen = filter(lambda match: match['comp_level'] == 'qm', self.matches)
+        return gen if generator else list(gen)
 
-    def get_playoff_matches(self):
-        """Returns the playoff matches for this event."""
-        return list(filter(lambda match: match['comp_level'] != 'qm', self.matches))
+    def get_playoff_matches(self, generator=False):
+        """Returns the playoff matches for this event. Returns a generator if generator == true."""
+        gen = filter(lambda match: match['comp_level'] != 'qm', self.matches)
+        return gen if generator else list(gen)
+
 
 class MatchHelper:
     COMP_LEVEL = 'comp_level'
@@ -162,4 +212,3 @@ def match_sort_key(match):
     key += 100 * match['set_number'] if match['comp_level'] != 'qm' else 0
     key += match['match_number']
     return key
-
