@@ -1,6 +1,3 @@
-from typing import List
-
-
 def team_format(team, format="frc{}"):
     if isinstance(team, int): return format.format(team)
     if isinstance(team, str):
@@ -13,7 +10,7 @@ def team_format(team, format="frc{}"):
     raise ValueError("Bad team format: " + str(team))
 
 
-def flip_alliance(alliance: str) -> str:
+def flip_alliance(alliance):
     if alliance.lower() == 'blue': return 'red'
     elif alliance.lower() == 'red': return 'blue'
     else: raise ValueError('Invalid alliance color: ' + alliance)
@@ -93,7 +90,7 @@ def match_stat(match, alliance, key):
     return dpath.util.get(match, path)
 
 
-def list2dict(lst: List, keysource='index'):
+def list2dict(lst, keysource='index'):
     if keysource == 'index':
         return dict((i, lst[i]) for i in range(len(lst)))
     elif isinstance(keysource, str):

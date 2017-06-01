@@ -1,12 +1,10 @@
-from typing import Dict
-
 import dpath
 import numpy
 
 from pytba.models import Event
 
 
-def match_matrix(event: Event) -> numpy.ndarray:
+def match_matrix(event: Event):
     """Returns a numpy participation matrix for the qualification matches in this event, used for calculating OPR.
 
         Each row in the matrix corresponds to a single alliance in a match, meaning that there will be two rows (one for
@@ -36,7 +34,7 @@ def match_matrix(event: Event) -> numpy.ndarray:
     return mat[:, numpy.apply_along_axis(numpy.count_nonzero, 0, mat) > avg_team_matches - 2]
 
 
-def opr(event: Event, **kwargs) -> Dict[str, Dict[str, float]]:
+def opr(event: Event, **kwargs):
     """Calculates component OPRs for all of the teams at this event and returns them as a dict.
 
     Component OPRs are calculated by solving the overdetermined system team1 + team2 + team3 = alliance statistic for
