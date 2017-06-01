@@ -1,5 +1,5 @@
 # pyTBA
-Python 3 Blue Alliance API Layer for parsing FIRST Robotics Competition event data.
+Python 3 Blue Alliance API (v2, v3 coming soon) Layer for parsing FIRST Robotics Competition event data.
 https://www.thebluealliance.com/
 
 ## Features:
