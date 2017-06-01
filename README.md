@@ -42,12 +42,12 @@ The most basic usage is to make a query to an arbitrary URL in the TBA API.
  
  More advanced usage can be found in the documentation in the source code.
   
-##Modules required:
+## Modules required:
 * `requests`
 * `cachecontrol`
 * `dpath`
 * `numpy` - for OPR calculation
   
-###Note about older versions:
+### Note about older versions:
 If you are updating from an older version (with the single blualliance.py file), be aware that the package structure has become more modularized. The core API code is now in the `pytba.api` module. The `Event` class is now under `pytba.models`. The decorators and utility methods are now under `pytba.util`, and OPR calcuation is now under `pytba.stat`. Check out [the init release](https://github.com/Thing342/pyTBA/releases/tag/init) if you need to clone the older code.
 
